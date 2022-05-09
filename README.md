@@ -2,13 +2,7 @@
 
 This microservice is middleware that returns information from NewsAPI.
 
-
-
-
-
-
-
-##Setup
+## Setup
 ### Running on Windows
 These are the steps I've taken to getting venv environment to work on Windows.
 I am not an expert, so if you have a better workaround please do so.
