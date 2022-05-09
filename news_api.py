@@ -35,9 +35,20 @@ def get_everything_news(term=DEFAULT_SEARCH_TERM):
     news_articles = response.json()
 
     if WRITE_TO_FILE:
-        write_json_into_file(news_articles)
+        write_json_into_file(json.dumps(news_articles))
 
     return news_articles
+
+
+@app.route('/search_term', methods=['POST'])
+def image_page():
+    """
+    Returns a single random image in a new page from form data. To use, set your form to submit as POST and make sure
+    you have an input with the name "url" in your form.
+    """
+    url = request.form.get("url")
+    website = image_to_return(url)
+    return render_template('imageresult.html', data=website)
 
 
 def write_json_into_file(res):
@@ -46,9 +57,9 @@ def write_json_into_file(res):
     the option is enabled.
     :return: bool
     """
-    # Writing to sample.json
     with open('sample.json', 'w') as outfile:
         outfile.write(res)
+    return True
 
 
 if __name__ == '__main__':
