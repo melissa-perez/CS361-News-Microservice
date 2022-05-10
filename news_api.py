@@ -10,8 +10,8 @@ import json
 PORT = 8081
 NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything'
 DEV_API_KEY = '39897659371e4fb59a57206a15e77a1d'
-DEFAULT_SEARCH_TERM = 'finance'
-WRITE_TO_FILE = True
+DEFAULT_SEARCH_TERM = 'Netflix'
+WRITE_TO_FILE = False
 
 app = Flask(__name__)
 
@@ -20,8 +20,11 @@ app = Flask(__name__)
 def get_everything_news(term=DEFAULT_SEARCH_TERM):
     """
     Runs a query on the everything section from the NewsAPI.
-    The default search term is used to return
-    :return: JSON object
+    The default search term is used to return.
+    This runs immediately when Flask is started. Use it to check
+    if the API is working on running server.
+
+    :return: JSON
     """
     text = [NEWS_API_ENDPOINT,
             '?',
@@ -40,15 +43,29 @@ def get_everything_news(term=DEFAULT_SEARCH_TERM):
     return news_articles
 
 
-@app.route('/search_term', methods=['POST'])
-def image_page():
+@app.route('/<string:search_term>', methods=['GET', 'POST'])
+def get_term_news(search_term):
     """
-    Returns a single random image in a new page from form data. To use, set your form to submit as POST and make sure
-    you have an input with the name "url" in your form.
+    Runs a query on the search_term on everything from the NewsAPI.
+    :return: JSON
     """
-    url = request.form.get("url")
-    website = image_to_return(url)
-    return render_template('imageresult.html', data=website)
+    text = [NEWS_API_ENDPOINT,
+            '?',
+            'q=',
+            search_term,
+            '&apiKey=',
+            DEV_API_KEY
+            ]
+    built_url = ''.join(text)
+    response = requests.get(built_url)
+    news_articles = response.json()
+
+    print(f'Received a ping for: {search_term}')
+
+    if WRITE_TO_FILE:
+        write_json_into_file(json.dumps(news_articles))
+
+    return news_articles
 
 
 def write_json_into_file(res):
